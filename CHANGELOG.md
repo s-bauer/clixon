@@ -35,6 +35,10 @@
   * New yang: ietf-restconf-collection@2020-10-22.yang
   * New http media: application/yang.collection+xml/json
 
+### Minor changes
+
+* Added XPATH functions `position`
+
 ## 4.8.0
 18 October 2020
 
