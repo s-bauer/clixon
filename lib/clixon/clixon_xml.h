@@ -53,6 +53,10 @@
 #define NETCONF_BASE_NAMESPACE "urn:ietf:params:xml:ns:netconf:base:1.0"
 #define NETCONF_BASE_PREFIX "nc"
 
+/* Collections namespace from draft-ietf-netconf-restconf-collection-00.txt
+ */
+#define NETCONF_COLLECTION_NAMESPACE "urn:ietf:params:xml:ns:yang:ietf-netconf-collection"
+
 /* See RFC 7950 Sec 5.3.1: YANG defines an XML namespace for NETCONF <edit-config> 
  * operations, <error-info> content, and the <action> element.
  */

@@ -1382,6 +1382,9 @@ netconf_module_load(clicon_handle h)
     /* Clixon restconf daemon */
     if (yang_spec_parse_module(h, "clixon-restconf", NULL, yspec)< 0)
 	goto done;
+    /* Load restconf collection */
+    if (yang_spec_parse_module(h, "ietf-netconf-list-pagination", NULL, yspec)< 0)
+	goto done;    
     retval = 0;
  done:
     return retval;
