@@ -431,6 +431,7 @@ api_return_err(clicon_handle h,
 	goto done;
     switch (media){
     case YANG_DATA_XML:
+    case YANG_COLLECTION_XML:
 	clicon_debug(1, "%s code:%d err:%s", __FUNCTION__, code, cbuf_get(cb));
 	if (pretty){
 	    cprintf(cb, "    <errors xmlns=\"urn:ietf:params:xml:ns:yang:ietf-restconf\">\n");
@@ -446,6 +447,7 @@ api_return_err(clicon_handle h,
 	}
 	break;
     case YANG_DATA_JSON:
+    case YANG_COLLECTION_JSON:
 	clicon_debug(1, "%s code:%d err:%s", __FUNCTION__, code, cbuf_get(cb));
 	if (pretty){
 	    cprintf(cb, "{\n\"ietf-restconf:errors\" : ");
@@ -461,9 +463,7 @@ api_return_err(clicon_handle h,
 	    cprintf(cb, "}\r\n");
 	}
 	break;
-    default:
-	clicon_err(OE_YANG, EINVAL, "Invalid media type %d", media);
-	goto done;
+    default: /* Just ignore the body so that there is a reply */
 	break;
     } /* switch media */
     if (restconf_reply_send(req, code, cb) < 0)

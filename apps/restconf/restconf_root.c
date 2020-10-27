@@ -346,6 +346,7 @@ api_root_restconf(clicon_handle h,
     cbuf          *cb = NULL;
     char          *media_str = NULL;
     restconf_media media_out = YANG_DATA_JSON;
+    restconf_media media_in;
     char          *indata = NULL;
     int            authenticated = 0;
     cxobj         *xret = NULL;
@@ -365,19 +366,29 @@ api_root_restconf(clicon_handle h,
      * If accept is * default is yang-json
      */
     if ((media_str = restconf_param_get(h, "HTTP_ACCEPT")) == NULL){
+	; /* Only some require out media, we dont know that yet */
 	// retval = restconf_unsupported_media(r);
 	// goto done;
     }
-    else    if ((int)(media_out = restconf_media_str2int(media_str)) == -1){
-	if (strcmp(media_str, "*/*") == 0) /* catch-all */
-	    media_out = YANG_DATA_JSON;
-	else{
+    else {
+	if ((int)(media_out = restconf_media_str2int(media_str)) == -1){
+	    if (strcmp(media_str, "*/*") == 0) /* catch-all */
+		media_out = YANG_DATA_JSON;
+	    else{
+		retval = restconf_unsupported_media(req);
+		goto done;
+	    }
+	}
+    }
+    if ((media_str = restconf_param_get(h, "HTTP_CONTENT_TYPE")) == NULL){
+	; /* Only some require in media, we dont know that yet */
+    }
+    else {
+	if ((int)(media_in = restconf_media_str2int(media_str)) == -1){
 	    retval = restconf_unsupported_media(req);
 	    goto done;
 	}
     }
-
-
     clicon_debug(1, "%s ACCEPT: %s %s", __FUNCTION__, media_str, restconf_media_int2str(media_out));
 
     if ((pvec = clicon_strsep(path, "/", &pn)) == NULL)

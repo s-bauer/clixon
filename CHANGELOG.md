@@ -27,6 +27,14 @@
 
 ## 4.9.0 Expected: 15 Dec 2020
 
+### New features
+
+* Prototype of collection draft
+  * This is prototype work for ietf netconf work
+  * See draft-ietf-netconf-restconf-collection-00.txt
+  * New yang: ietf-restconf-collection@2020-10-22.yang
+  * New http media: application/yang.collection+xml/json
+
 ## 4.8.0
 18 October 2020
 
