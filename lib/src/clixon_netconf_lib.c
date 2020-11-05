@@ -1380,7 +1380,7 @@ netconf_module_load(clicon_handle h)
 	if (yang_spec_parse_module(h, "clixon-xml-changelog", NULL, yspec)< 0)
 	    goto done;
     /* Load restconf collection */
-    if (yang_spec_parse_module(h, "ietf-netconf-collection", NULL, yspec)< 0)
+    if (yang_spec_parse_module(h, "ietf-netconf-list-pagination", NULL, yspec)< 0)
 	goto done;    
     retval = 0;
  done:
