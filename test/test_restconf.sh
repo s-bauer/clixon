@@ -84,7 +84,6 @@ testrun()
 	    new "start restconf daemon"
 	    start_restconf -f $cfg
 	fi
-
     fi
     new "wait restconf"
     wait_restconf

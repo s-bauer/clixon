@@ -255,6 +255,18 @@ yang_cv_get(yang_stmt *ys)
     return ys->ys_cv;
 }
 
+/*! Set yang statement CLIgen variable
+ * @param[in] ys  Yang statement node
+ * @param[in] cv  CLIgen variable
+ */
+static int
+yang_cv_set(yang_stmt *ys,
+	    cg_var    *cv)
+{
+    ys->ys_cv = cv;
+    return 0;
+}
+
 /*! Get yang statement CLIgen variable vector
  * @param[in] ys  Yang statement node
  */
@@ -1529,15 +1541,13 @@ yang_print_cbuf(cbuf      *cb,
  */
 static int
 ys_populate_leaf(clicon_handle h,
-		 yang_stmt *ys)
+		 yang_stmt    *ys)
 {
     int             retval = -1;
     cg_var         *cv = NULL;
-    yang_stmt      *yparent; 
     yang_stmt      *ydef; 
     enum cv_type    cvtype = CGV_ERR;
     int             cvret;
-    int             ret;
     char           *reason = NULL;
     yang_stmt      *yrestype;  /* resolved type */
     char           *restype;  /* resolved type */
@@ -1546,7 +1556,6 @@ ys_populate_leaf(clicon_handle h,
     int             options = 0x0;
     yang_stmt      *ytypedef; /* where type is define */
 
-    yparent = ys->ys_parent;     /* Find parent: list/container */
     /* 1. Find type specification and set cv type accordingly */
     if (yang_type_get(ys, &origtype, &yrestype, &options, NULL, NULL, NULL, &fraction_digits)
  < 0)
@@ -1601,12 +1610,7 @@ ys_populate_leaf(clicon_handle h,
 	/* 3b. If not default value, indicate empty cv. */
 	cv_flag_set(cv, V_UNSET); /* no value (no default) */
     }
-    /* 4. Check if leaf is part of list, if key exists mark leaf as key/unique */
-    if (yparent && yparent->ys_keyword == Y_LIST){
-	if ((ret = yang_key_match(yparent, ys->ys_argument)) < 0)
-	    goto done;
-    }
-    ys->ys_cv = cv;
+    yang_cv_set(ys, cv); /* Why if no default value? */
     retval = 0;
   done:
     if (origtype)
@@ -2016,7 +2020,7 @@ ys_populate_feature(clicon_handle h,
     cv_bool_set(cv, found);
     if (found)
 	clicon_debug(2, "%s %s:%s", __FUNCTION__, module, feature);
-    ys->ys_cv = cv;
+    yang_cv_set(ys, cv);
  ok:
     retval = 0;
  done:
