@@ -1465,7 +1465,10 @@ from_client_get_pageable_list(clicon_handle h,
     }
     if ((xtop = xml_new("top", NULL, CX_ELMNT)) == NULL)
 	goto done;
+<<<<<<< HEAD
     /* Parse xpath -> stuctured path tree */   
+=======
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
     if ((ret = clixon_instance_id_parse(yspec, &path_tree, "%s", xpath)) < 0) 
 	goto done;
     if (ret == 0){
@@ -1473,13 +1476,20 @@ from_client_get_pageable_list(clicon_handle h,
 	    goto done;	
 	goto ok;
     }
+<<<<<<< HEAD
     /* get last element of path, eg /a/b/c, get c */
+=======
+    /* get last element */
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
     if ((cp = PREVQ(clixon_path *, path_tree)) == NULL){
 	if (netconf_bad_element(cbret, "application", "list-target", "path invalid") < 0)
 	    goto done;
 	goto ok;
     }
+<<<<<<< HEAD
     /* get yang of last element */
+=======
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
     if ((y = cp->cp_yang) == NULL){
 	if (netconf_bad_element(cbret, "application", "list-target", "No yang associated with path") < 0)
 	    goto done;
@@ -1490,10 +1500,14 @@ from_client_get_pageable_list(clicon_handle h,
 	    goto done;
 	goto ok;
     }
+<<<<<<< HEAD
     /* Build a "predicate" cbuf 
      * This solution uses xpath predicates to translate "count" and "skip" to
      * relational operators <>.
      */
+=======
+    /* Build a "predicate" cbuf */
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
     if ((cb = cbuf_new()) == NULL){
 	clicon_err(OE_UNIX, errno, "cbuf_new");
 	goto done;
@@ -1502,9 +1516,15 @@ from_client_get_pageable_list(clicon_handle h,
     if (where)
 	cprintf(cb, "[%s]", where);
     if (skip){
+<<<<<<< HEAD
 	cprintf(cb, "[%u <= position()", skip);
 	if (count)
 	    cprintf(cb, " and position() < %u", count+skip);
+=======
+	cprintf(cb, "[%u < position()", skip);
+	if (count)
+	    cprintf(cb, " && position() < %u", count+skip);
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
 	cprintf(cb, "]");
     }
     else if (count)

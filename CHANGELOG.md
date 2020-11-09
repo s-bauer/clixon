@@ -36,7 +36,7 @@
   * If enabled, most RESTCONF clixon-config options are obsolete
   * Thanks to Dave Cornejo for the idea
   * Example: instead of setting `<CLICON_SSL_SERVER_CERT>file</CLICON_SSL_SERVER_CERT>` in clixon.xml, set: `arestconf><socket><server-cert-path>file</server-cert-path></socket></restconf>` in the running datastore before starting restconf.
-	
+
 * Prototype of collection draft
   * This is prototype work for ietf netconf work
   * See draft-ietf-netconf-restconf-collection-00.txt

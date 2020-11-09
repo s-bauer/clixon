@@ -57,6 +57,7 @@ cat <<'EOF' > $dir/startup_db
            <number>3</number>
          </preference>
          <skill>
+<<<<<<< HEAD
            <name>Conflict Resolution</name>
            <rank>93</rank>
          </skill>
@@ -72,6 +73,15 @@ cat <<'EOF' > $dir/startup_db
            <name>Problem Solving</name>
            <rank>98</rank>
          </skill>
+=======
+           <name>Problem Solving</name>
+           <rank>98</rank>
+         </skill>
+         <skill>
+           <name>Conflict Resolution</name>
+           <rank>93</rank>
+         </skill>
+>>>>>>> 564ffe2711449e31885910773275f9ba6cda2196
        </admin>
        <admin>
          <name>Joe</name>
