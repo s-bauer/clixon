@@ -172,15 +172,15 @@ drop_priv_temp(uid_t new_uid)
 {
     int retval = -1;
     
-    /* XXX: implicit declaration of function 'setresuid' on travis */
-    if (setresuid(-1, new_uid, geteuid()) < 0){
-	clicon_err(OE_UNIX, errno, "setresuid");
-	goto done;
-    }
-    if (geteuid() != new_uid){
-	clicon_err(OE_UNIX, errno, "geteuid");
-	goto done;
-    }
+    // /* XXX: implicit declaration of function 'setresuid' on travis */
+    // if (setresuid(-1, new_uid, geteuid()) < 0){
+	// clicon_err(OE_UNIX, errno, "setresuid");
+	// goto done;
+    // }
+    // if (geteuid() != new_uid){
+	// clicon_err(OE_UNIX, errno, "geteuid");
+	// goto done;
+    // }
     retval = 0;
  done:
     return retval;
@@ -197,20 +197,20 @@ drop_priv_perm(uid_t new_uid)
     uid_t euid;
     uid_t suid;
 
-    if (setresuid(new_uid, new_uid, new_uid) < 0){
-	clicon_err(OE_UNIX, errno, "setresuid");
-	goto done;
-    }
-    if (getresuid(&ruid, &euid, &suid) < 0){
-	clicon_err(OE_UNIX, errno, "getresuid");
-	goto done;
-    }
-    if (ruid != new_uid ||
-	euid != new_uid ||
-	suid != new_uid){
-	clicon_err(OE_UNIX, EINVAL, "Non-matching uid");
-	goto done;
-    }
+    // if (setresuid(new_uid, new_uid, new_uid) < 0){
+	// clicon_err(OE_UNIX, errno, "setresuid");
+	// goto done;
+    // }
+    // if (getresuid(&ruid, &euid, &suid) < 0){
+	// clicon_err(OE_UNIX, errno, "getresuid");
+	// goto done;
+    // }
+    // if (ruid != new_uid ||
+	// euid != new_uid ||
+	// suid != new_uid){
+	// clicon_err(OE_UNIX, EINVAL, "Non-matching uid");
+	// goto done;
+    // }
     retval = 0;
  done:
     return retval;
@@ -225,18 +225,18 @@ restore_priv(void)
     uid_t euid;
     uid_t suid;
     
-    if (getresuid(&ruid, &euid, &suid) < 0){
-	clicon_err(OE_UNIX, errno, "setresuid");
-	goto done;
-    }
-    if (setresuid(-1, suid, -1) < 0){
-	clicon_err(OE_UNIX, errno, "setresuid");
-	goto done;
-    }
-    if (geteuid() != suid){
-	clicon_err(OE_UNIX, EINVAL, "Non-matching uid");
-	goto done;
-    }
+    // if (getresuid(&ruid, &euid, &suid) < 0){
+	// clicon_err(OE_UNIX, errno, "setresuid");
+	// goto done;
+    // }
+    // if (setresuid(-1, suid, -1) < 0){
+	// clicon_err(OE_UNIX, errno, "setresuid");
+	// goto done;
+    // }
+    // if (geteuid() != suid){
+	// clicon_err(OE_UNIX, EINVAL, "Non-matching uid");
+	// goto done;
+    // }
     retval = 0;
  done:
     return retval;

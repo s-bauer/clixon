@@ -67,7 +67,7 @@ CLIXON_MINOR    = @CLIXON_VERSION_MINOR@
 ifeq ($(LINKAGE),static)
 	CLIXON_LIB	= libclixon.a
 else
-	CLIXON_LIB	= libclixon$(SH_SUFFIX).$(CLIXON_MAJOR).$(CLIXON_MINOR)
+	CLIXON_LIB	= libclixon.dll.a
 endif
 
 # For dependency. A little strange that we rely on it being built in the src dir
@@ -96,9 +96,9 @@ LIBOBJ	= $(LIBSRC:.c=.o)
 
 # Name of lib
 MYNAME		= clixon_backend
-MYLIBDYNAMIC    = lib$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR).$(CLIXON_MINOR)
-MYLIBSO         = lib$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR)
-MYLIBLINK       = lib$(MYNAME)$(SH_SUFFIX)
+MYLIBDYNAMIC    = cyg$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR).$(CLIXON_MINOR)
+MYLIBSO         = cyg$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR)
+MYLIBLINK       = cyg$(MYNAME)$(SH_SUFFIX)
 MYLIBSTATIC     = lib$(MYNAME).a
 
 ifeq ($(LINKAGE),static)
@@ -165,7 +165,11 @@ $(MYLIBDYNAMIC): $(LIBOBJ) $(LIBDEPS)
 ifeq ($(HOST_VENDOR),apple)
 	$(CC) $(LDFLAGS) -shared -undefined dynamic_lookup -o $@ -lc $(LIBOBJ)
 else
-	$(CC) $(LDFLAGS) -shared -Wl,-soname,$(MYLIBSO) -o $@ -lc $(LIBOBJ) -Wl,-soname=$(MYLIBSO)
+	$(CC) $(LDFLAGS) -shared -o $@ $(LIBOBJ) $(LIBS) -lc \
+		-Wl,-soname=$(MYLIBSO)\
+		-Wl,--out-implib=$(MYLIBSTATIC) \
+		-Wl,--export-all-symbols \
+		-Wl,--enable-auto-import
 endif
 
 # link-name is needed for application linking, eg for clixon_cli and clixon_backend

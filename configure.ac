@@ -148,7 +148,7 @@ if test "$prefix" = "NONE"; then
      prefix=${ac_default_prefix}
 fi
 
-SH_SUFFIX=".so"
+SH_SUFFIX=".dll"
 
 # This is for cligen
 AC_ARG_WITH([cligen], AS_HELP_STRING([--with-cligen=dir],[Use CLIGEN installation in this dir]))

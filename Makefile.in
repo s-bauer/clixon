@@ -66,8 +66,8 @@ all:	$(SUBDIRS2) warnroot
 	@echo "\e[32mAfter 'make install' as euid root, build example app and test utils: 'make example'\e[0m"
 
 checkroot:
-	@if [ "$${DESTDIR}" = "" -a $$(id -u) != "0" ]; \
-	then echo "\e[31mThis target must be made as euid root\e[0m"; exit 1; fi;
+	# @if [ "$${DESTDIR}" = "" -a $$(id -u) != "0" ]; \
+	# then echo "\e[31mThis target must be made as euid root\e[0m"; exit 1; fi;
 
 warnroot:
 	@if [ $$(id -u) = 0 ]; \

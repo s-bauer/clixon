@@ -73,7 +73,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/param.h>
-#include <sys/user.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 

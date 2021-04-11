@@ -102,10 +102,10 @@ GENOBJS  = $(GENSRC:.c=.o)
 # so-name: libclixon.so.2
 # real-name: libclixon.so.2.0
 MYNAME	     = clixon
-MYLIBDYNAMIC = lib$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR).$(CLIXON_MINOR)
-MYLIBSO      = lib$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR)
-MYLIBLINK    = lib$(MYNAME)$(SH_SUFFIX)
-MYLIBSTATIC  = lib$(MYNAME).a
+MYLIBDYNAMIC = cyg$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR).$(CLIXON_MINOR)
+MYLIBSO      = cyg$(MYNAME)$(SH_SUFFIX).$(CLIXON_MAJOR)
+MYLIBLINK    = cyg$(MYNAME)$(SH_SUFFIX)
+MYLIBSTATIC  = lib$(MYNAME)$(SH_SUFFIX).a
 
 ifeq ($(LINKAGE),static)
 	MYLIB        = $(MYLIBSTATIC)
@@ -242,14 +242,20 @@ $(MYLIBDYNAMIC) : $(GENOBJS) $(OBJS)
 ifeq ($(HOST_VENDOR),apple)
 	$(CC) $(LDFLAGS) -shared -o $@ $(GENOBJS) $(OBJS) $(LIBS) -undefined dynamic_lookup -o $@
 else
-	$(CC) $(LDFLAGS) -shared -Wl,-soname,$(MYLIBSO) -o $@ $(GENOBJS) $(OBJS) $(LIBS) -Wl,-soname=$(MYLIBSO)
+	$(CC) $(LDFLAGS) -shared -o $@ $(GENOBJS) $(OBJS) $(LIBS) \
+		-Wl,-soname=$(MYLIBSO)\
+		-Wl,--out-implib=$(MYLIBSTATIC) \
+		-Wl,--export-all-symbols \
+		-Wl,--enable-auto-import
 endif
+
+$(MYLIBSTATIC) : $(MYLIBDYNAMIC)
 
 # link-name is needed for application linking, eg for clixon_backend/clixon_cli
 $(MYLIBLINK) : $(MYLIB)
 
-$(MYLIBSTATIC) :  $(GENOBJS) $(OBJS) 
-	ar -crs $@  $(GENOBJS) $(OBJS)
+# $(MYLIBSTATIC) :  $(GENOBJS) $(OBJS) 
+# 	ar -crs $@  $(GENOBJS) $(OBJS)
 
 install: install-lib
 
@@ -258,6 +264,7 @@ install-include:
 install-lib: $(MYLIB)
 	$(INSTALL) -m 0755 -d $(DESTDIR)$(libdir)
 	$(INSTALL_LIB) -m 0644 $(INSTALLFLAGS) $(MYLIB) $(DESTDIR)$(libdir)
+	$(INSTALL_LIB) -m 0644 $(INSTALLFLAGS) $(MYLIBSTATIC) $(DESTDIR)$(libdir)
 ifeq ($(LINKAGE),dynamic)
 	ln -sf $(MYLIB) $(DESTDIR)$(libdir)/$(MYLIBSO)     # -l:libclixon.so.3
 	ln -sf $(MYLIBSO) $(DESTDIR)$(libdir)/$(MYLIBLINK) # -l:libclixon.so
