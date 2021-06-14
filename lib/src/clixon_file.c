@@ -62,6 +62,73 @@
 #include "clixon_log.h"
 #include "clixon_file.h"
 
+struct clicon_file_list_item 
+{
+    char * name;
+    struct clicon_file_list_item * next;
+} clicon_file_list_item;
+
+
+struct clicon_file_list
+{
+    struct clicon_file_list_item * first;
+} clicon_file_list;
+
+
+/*! frees the linked list
+ */
+void clicon_file_list_free(clicon_file_list * list) 
+{
+    while(list->first != NULL) 
+    {
+        list->first = current->next;
+
+        free(current->name);
+        free(current);
+    }
+
+    free(list);
+}
+
+/*! Initializes the clicon_file_list
+ */
+void clicon_file_list_init(clicon_file_list ** list) {
+    *list = malloc(siezof(clicon_file_list));
+    *list->first = NULL;
+}
+
+/*! Adds a new element to the clicon_file_list in alphabetical order
+ */
+void clicon_file_list_add(clicon_file_list * list, char * name)
+{
+    clicon_file_list_item * iterator;
+
+    int nameLen = strlen(name);
+
+    clicon_file_list_item * item;
+    item = malloc(sizeof(clicon_file_list_item));
+    item->next = NULL;
+    item->name = malloc(nameLen + 1);
+    memcpy(*list->name, name, nameLen + 1);
+
+    if(list->first == NULL) {
+        list->first = item;
+    } else {
+        if(strcoll(name, list->first->name) <= 0) {
+            item->next = list->first;
+            list->first = item;
+        } else {
+            iterator = list->first;
+            while(iterator->next != NULL && strcoll(name, iterator->next->name) > 0) {
+                iterator = iterator->next;
+            }
+            
+            item->next = iterator->next;
+            iterator->next = item;
+        }
+    }
+}
+
 /*! qsort "compar" for directory alphabetically sorting, see qsort(3)
  */
 static int
@@ -76,7 +143,7 @@ clicon_file_dirent_sort(const void* arg1,
 
 /*! Return alphabetically sorted files from a directory matching regexp
  * @param[in]  dir     Directory path 
- * @param[out] ent     Entries pointer, will be filled in with dir entries. Free
+ * @param[out] ent     Entries pointer, will be filled in with filenames. Free
  *                     after use
  * @param[in]  regexp  Regexp filename matching 
  * @param[in]  type    File type matching, see stat(2) 
@@ -90,13 +157,13 @@ clicon_file_dirent_sort(const void* arg1,
  *   if ((ndp = clicon_file_dirent(dir, &dp, "(.so)$", S_IFREG)) < 0)
  *       return -1;
  *   for (i = 0; i < ndp; i++) 
- *       do something with dp[i].d_name;
+ *       do something with dp[i];
  *   free(dp);
  * @endcode
 */
 int
 clicon_file_dirent(const char     *dir,
-		   struct dirent **ent,
+		   clicon_file_list **ent,
 		   const char     *regexp,	
 		   mode_t          type)
 {
@@ -109,11 +176,6 @@ clicon_file_dirent(const char     *dir,
    char           filename[MAXPATHLEN];
    struct stat    st;
    struct dirent *dent;
-   struct dirent *tmp;
-   struct dirent *new = NULL;
-#if 0 /* revert of https://github.com/clicon/clixon/pull/238 */
-   int            direntStructSize;
-#endif
 
    clicon_debug(1, "%s", __FUNCTION__);
    *ent = NULL;
@@ -147,39 +209,27 @@ clicon_file_dirent(const char     *dir,
 	   if ((type & st.st_mode) == 0)
 	       continue;
        }
-#if 0 /* revert of https://github.com/clicon/clixon/pull/238 */
-       direntStructSize = offsetof(struct dirent, d_name) + strlen(dent->d_name) + 1;
-       clicon_debug(1, "%s %u %u %lu", __FUNCTION__, nent, direntStructSize, sizeof(struct dirent));
-       if ((tmp = realloc(new, (nent+1)*direntStructSize)) == NULL) {
-#else
-	   if ((tmp = realloc(new, (nent+1)*sizeof(struct dirent))) == NULL) {
-#endif
-	   clicon_err(OE_UNIX, errno, "realloc");
-	   goto quit;
+
+       // Initialize the result list if required
+       if(*ent == null) {
+            clicon_file_list_init(ent);
        }
-       new = tmp;
-#if 0 /* revert of https://github.com/clicon/clixon/pull/238 */
-       clicon_debug(1, "%s memcpy(%p %p %u", __FUNCTION__, &new[nent], dent, direntStructSize);
-       memcpy(&new[nent], dent, direntStructSize); /* XXX Invalid write of size 8 */
-#else
-       memcpy(&new[nent], dent, sizeof(*dent));
-#endif
+
+       clicon_file_list_add(*ent, dent->d_name);
+
        nent++;
 
    } /* while */
 
-   qsort((void *)new, nent, sizeof(*new), clicon_file_dirent_sort);
-   *ent = new;
-   new = NULL;
    retval = nent;
 quit:
-   if (new)
-       free(new);
-   if (dirp)
-       closedir(dirp);
-   if (regexp)
-       regfree(&re);
-   return retval;
+
+    if (dirp)
+        closedir(dirp);
+    if (regexp)
+        regfree(&re);
+        
+    return retval;
 }
 
 /*! Make a copy of file src. Overwrite existing
